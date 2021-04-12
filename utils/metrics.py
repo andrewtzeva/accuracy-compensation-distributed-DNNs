@@ -84,7 +84,7 @@ def expected_bvsb(predictions):
 
 def gbvsb(pred_distribution, M, N):
     sorted_args_1 = pred_distribution.argsort()[-M:][::-1]
-    pred_distribution_rest = [v for i, v in enumerate(pred_distribution) if i not in sorted_args_1]
+    pred_distribution_rest = np.asarray([v for i, v in enumerate(pred_distribution) if i not in sorted_args_1])
 
     sorted_args_2 = pred_distribution_rest.argsort()[-N:][::-1]
 
@@ -96,6 +96,16 @@ def gbvsb(pred_distribution, M, N):
         prob_sum_2 += pred_distribution[i]
 
     return prob_sum_1 - prob_sum_2
+
+
+def expected_gbvsb(predictions, M, N):
+    gbvsb_sum = 0
+    num_of_samples = len(predictions)
+
+    for prediction in predictions:
+        gbvsb_sum += gbvsb(prediction, M, N)
+
+    return gbvsb_sum / num_of_samples
 
 
 def gini_index(pred_distribution):
