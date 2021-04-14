@@ -1,4 +1,6 @@
 import numpy as np
+from keras.preprocessing import image
+import keras
 
 
 def reform_samples(predictions, labels):
@@ -24,5 +26,13 @@ def one_hot_encode(test_labels, num_of_classes):
         labels.append(label)
 
     return np.asarray(labels)
+
+
+def prepare_image(file):
+    img = image.load_img(file, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array_expanded_dims = np.expand_dims(img_array, axis=0)
+
+    return keras.applications.mobilenet.preprocess_input(img_array_expanded_dims)
 
 
