@@ -113,7 +113,7 @@ def ece(preds, confs, num_of_bins = 10):
     return ece_sum/num_of_samples
 
 
-def mce(preds, confs, num_of_bins = 10):
+def mce(preds, confs, num_of_bins=15):
     step = 1/num_of_bins
     diff_values = []
 
@@ -127,7 +127,7 @@ def mce(preds, confs, num_of_bins = 10):
     return max(diff_values)
 
 
-def sce(preds, confs, classes, num_of_classes, num_of_bins = 10):
+def sce(preds, confs, classes, num_of_classes, num_of_bins=15):
     step = 1 / num_of_bins
     num_of_samples = len(preds)
     class_sum = 0
@@ -144,4 +144,3 @@ def sce(preds, confs, classes, num_of_classes, num_of_bins = 10):
         class_sum += ece_sum
 
     return class_sum/(num_of_samples * num_of_classes)
-
