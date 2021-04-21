@@ -1,6 +1,7 @@
 import numpy as np
 from keras.preprocessing import image
 import keras
+import pickle
 
 
 def reform_samples(predictions, labels):
@@ -34,5 +35,16 @@ def prepare_image(file):
     img_array_expanded_dims = np.expand_dims(img_array, axis=0)
 
     return keras.applications.mobilenet.preprocess_input(img_array_expanded_dims)
+
+
+def unpickle_predictions(file, verbose=False):
+    with open(file, 'rb') as f:
+        (predictions, labels) = pickle.load(f)  # unpickle the content
+
+    if verbose:
+        print("predictions:", predictions.shape)  # Validation set probabilities of predictions
+        print("labels:", labels.shape)  # Validation set true labels
+
+    return predictions, labels
 
 

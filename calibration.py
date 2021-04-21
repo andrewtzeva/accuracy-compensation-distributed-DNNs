@@ -2,6 +2,8 @@ import numpy as np
 from utils.calibration_metrics import *
 from scipy.optimize import minimize
 from sklearn.metrics import log_loss
+from utils.utils import *
+from os.path import join
 
 
 def softmax(x):
@@ -30,6 +32,9 @@ class TemperatureScaling:
         self.temp = temp
         self.maxiter = maxiter
         self.solver = solver
+
+    def gettemp(self):
+        return self.temp
 
     def _loss_fun(self, x, probs, true):
         # Calculates the loss using log-loss (cross-entropy loss)
@@ -102,3 +107,53 @@ def evaluate(predictions, labels, verbose=False, bins=15):
         print("NLL:", loss)
 
     return ece_val, mce_val, loss
+
+
+def calibrate(path, file, m_kwargs={}):
+    """
+    Calibrate models scores, using output from logits files.
+
+    Params:
+        path (string): path to the folder with logits files
+        files (string): pickled logits files (logits_val, y_val)
+        m_kwargs (dictionary): keyword arguments for the calibration class initialization
+
+    Returns:
+        model: TemperatureScaling class instance with fitted temperature
+
+    """
+
+    f_path = join(path, file)
+    (logits_val, y_val) = unpickle_predictions(f_path)
+
+    y_val = y_val.flatten()
+
+    model = TemperatureScaling(**m_kwargs)
+
+    model.fit(logits_val, y_val)
+
+    return model
+
+
+def infer(model, path, file):
+    """
+    Infer models predictions, using output from logits files.
+
+    Params:
+        path (string): path to the folder with logits files
+        file (string): pickled logits files (logits_val, y_val)
+        m_kwargs (dictionary): keyword arguments for the calibration class initialization
+
+    Returns:
+        predictions: calibrated probabilities (nd.array with shape [samples, classes])
+
+    """
+
+    f_path = join(path, file)
+    (logits_val, y_val) = unpickle_predictions(f_path)
+
+    predictions = model.predict(logits_val)
+
+    print("ECE %f; MCE %f; NLL %f" % evaluate(predictions, y_val, verbose=False))
+
+    return predictions
