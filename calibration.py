@@ -54,7 +54,6 @@ class TemperatureScaling:
             the results of optimizer after minimizing is finished.
         """
 
-        true = true.flatten()  # Flatten y_val
         opt = minimize(self._loss_fun, x0=1, args=(logits, true), options={'maxiter': self.maxiter}, method=self.solver)
         self.temp = opt.x[0]
 
@@ -99,7 +98,7 @@ def evaluate(predictions, labels, verbose=False, bins=15):
     # Calculate MCE
     mce_val = mce(preds, confs, bins)
     # Calculate NLL
-    loss = log_loss(predictions, labels)
+    loss = log_loss(labels, predictions)
 
     if verbose:
         print("ECE:", ece_val)
@@ -109,7 +108,7 @@ def evaluate(predictions, labels, verbose=False, bins=15):
     return ece_val, mce_val, loss
 
 
-def calibrate(path, file, m_kwargs={}):
+def calibrate(scaler, path, file):
     """
     Calibrate models scores, using output from logits files.
 
@@ -118,24 +117,18 @@ def calibrate(path, file, m_kwargs={}):
         files (string): pickled logits files (logits_val, y_val)
         m_kwargs (dictionary): keyword arguments for the calibration class initialization
 
-    Returns:
-        model: TemperatureScaling class instance with fitted temperature
-
     """
 
     f_path = join(path, file)
     (logits_val, y_val) = unpickle_predictions(f_path)
 
-    y_val = y_val.flatten()
+    y_val = np.asarray(y_val)
+    y_val = one_hot_encode(y_val, 1000)
 
-    model = TemperatureScaling(**m_kwargs)
-
-    model.fit(logits_val, y_val)
-
-    return model
+    scaler.fit(logits_val, y_val)
 
 
-def infer(model, path, file):
+def infer(scaler, path, file):
     """
     Infer models predictions, using output from logits files.
 
@@ -146,14 +139,16 @@ def infer(model, path, file):
 
     Returns:
         predictions: calibrated probabilities (nd.array with shape [samples, classes])
+        y_test: a list containing the actual class labels
 
     """
 
     f_path = join(path, file)
-    (logits_val, y_val) = unpickle_predictions(f_path)
+    (logits_test, y_test) = unpickle_predictions(f_path)
 
-    predictions = model.predict(logits_val)
+    y_test = one_hot_encode(y_test, 1000)
+    predictions = scaler.predict(logits_test)
 
-    print("ECE %f; MCE %f; NLL %f" % evaluate(predictions, y_val, verbose=False))
+    print("ECE %f; MCE %f; NLL %f" % evaluate(predictions, y_test, verbose=False))
 
-    return predictions
+    return predictions, y_test
