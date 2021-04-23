@@ -2,7 +2,7 @@ import numpy as np
 from .metrics import cross_entropy
 
 
-def expected_cross_entropy(server_predictions, client_predictions):
+def expected_cross_entropy_srv(server_predictions, client_predictions):
     cross_entropy_sum = 0
     num_of_samples = len(server_predictions)
 

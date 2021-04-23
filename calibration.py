@@ -128,14 +128,14 @@ def calibrate(scaler, path, file):
     scaler.fit(logits_val, y_val)
 
 
-def infer(scaler, path, file):
+def infer(scaler, path, file, verbose=False):
     """
     Infer models predictions, using output from logits files.
 
     Params:
         path (string): path to the folder with logits files
         file (string): pickled logits files (logits_val, y_val)
-        m_kwargs (dictionary): keyword arguments for the calibration class initialization
+        verbose (Bool): calibration scores printed out (default = False)
 
     Returns:
         predictions: calibrated probabilities (nd.array with shape [samples, classes])
@@ -149,6 +149,7 @@ def infer(scaler, path, file):
     y_test = one_hot_encode(y_test, 1000)
     predictions = scaler.predict(logits_test)
 
-    print("ECE %f; MCE %f; NLL %f" % evaluate(predictions, y_test, verbose=False))
+    if verbose:
+        print("ECE %f; MCE %f; NLL %f" % evaluate(predictions, y_test, verbose=False))
 
     return predictions, y_test
