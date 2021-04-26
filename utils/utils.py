@@ -48,3 +48,10 @@ def unpickle_predictions(file, verbose=False):
     return predictions, labels
 
 
+def load_model_files(model_name, scaler):
+    path = 'models/' + model_name + '/'
+    val_file = 'val_logits_' + model_name + '.pkl'
+    test_file = 'test_logits_' + model_name + '.pkl'
+
+    return scaler, path, val_file, test_file
+

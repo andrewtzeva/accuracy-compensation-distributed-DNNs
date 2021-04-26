@@ -17,7 +17,7 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
             df (pandas.DataFrame): dataframe with the results.
         """
 
-    df = pd.DataFrame(columns=["M.Name", "Top1", "Top5", "Entropy", "BVSB", "Exp.accuracy",
+    df = pd.DataFrame(columns=["Top1", "Top5", "Entropy", "BVSB", "Exp.accuracy",
                                                "Gini", "B.accuracy", "C.Entropy"])
 
     top1_acc = top1_accuracy(predictions, labels)
@@ -29,9 +29,10 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
     cross_entr = expected_cross_entropy(predictions, labels)
     b_acc = balanced_accuracy(predictions, labels)
 
-    df.loc[0] = [model_name, top1_acc, top5_acc, exp_entr, bvsb_val, exp_acc, gini, b_acc, cross_entr]
+    df.loc[0] = [top1_acc, top5_acc, exp_entr, bvsb_val, exp_acc, gini, b_acc, cross_entr]
 
     if verbose:
+        print('{}:'.format(model_name))
         pd.set_option('display.max_columns', None)
         pd.set_option('display.expand_frame_repr', False)
         print(df)
@@ -39,7 +40,7 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
     return df
 
 
-def evaluate_accuracy_sys(model_name, server_predictions, client_predictions, labels, verbose=False):
+def evaluate_accuracy_sys(mobile_name, server_name, server_predictions, client_predictions, labels, verbose=False):
     """
         Evaluate model's realistic accuracy using various scoring measures:
         top1, top5, entropy, bvsb, expected accuracy, gini index, balanced accuracy, cross entropy
@@ -53,14 +54,15 @@ def evaluate_accuracy_sys(model_name, server_predictions, client_predictions, la
             df (pandas.DataFrame): dataframe with the results.
         """
 
-    df = pd.DataFrame(columns=["M.Name", "C.Entropy", "Conf. Diff."])
+    df = pd.DataFrame(columns=["C.Entropy", "Conf. Diff."])
 
     cr_entropy = expected_cross_entropy_srv(server_predictions, client_predictions)
     conf_diff = expected_confidence_diff(server_predictions, client_predictions, labels)
 
-    df.loc[0] = [model_name, cr_entropy, conf_diff]
+    df.loc[0] = [cr_entropy, conf_diff]
 
     if verbose:
+        print('{} with reference to {}:'.format(mobile_name, server_name))
         pd.set_option('display.max_columns', None)
         pd.set_option('display.expand_frame_repr', False)
         print(df)
