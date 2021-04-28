@@ -9,8 +9,8 @@ def main():
     scaler_server = TemperatureScaling()
     scaler_mobile = TemperatureScaling()
 
-    scaler_server, path_server, val_file_server, test_file_server = load_model_files(server_model, scaler_server)
-    scaler_mobile, path_mobile, val_file_mobile, test_file_mobile = load_model_files(mobile_model, scaler_mobile)
+    path_server, val_file_server, test_file_server = load_model_files(server_model, scaler_server)
+    path_mobile, val_file_mobile, test_file_mobile = load_model_files(mobile_model, scaler_mobile)
 
     calibrate(scaler_server, path_server, val_file_server)
     predictions_server, labels = infer(scaler_server, path_server, test_file_server)

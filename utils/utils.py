@@ -53,5 +53,5 @@ def load_model_files(model_name, scaler):
     val_file = 'val_logits_' + model_name + '.pkl'
     test_file = 'test_logits_' + model_name + '.pkl'
 
-    return scaler, path, val_file, test_file
+    return path, val_file, test_file
 
