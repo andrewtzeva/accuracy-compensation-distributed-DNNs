@@ -9,6 +9,7 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
         top1, top5, entropy, bvsb, expected accuracy, gini index, balanced accuracy, cross entropy
 
         Params:
+            model_name (str)
             predictions: a list containing confidences for all the classes with a shape of (samples, classes)
             labels: a list containing the actual class labels
             verbose: (bool) are the scores printed out. (default = False)
@@ -42,11 +43,14 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
 
 def evaluate_accuracy_sys(mobile_name, server_name, server_predictions, client_predictions, labels, verbose=False):
     """
-        Evaluate model's realistic accuracy using various scoring measures:
-        top1, top5, entropy, bvsb, expected accuracy, gini index, balanced accuracy, cross entropy
+        Evaluate mobile model's realistic accuracy with reference to server model using scores:
+        cross entropy, ground truth confidence difference
 
         Params:
-            predictions: a list containing confidences for all the classes with a shape of (samples, classes)
+            mobile_name (str)
+            server_name (str)
+            server_predictions: a list containing server confidences for all the classes with a shape of (samples, classes)
+            client_predictions: a list containing client confidences for all the classes with a shape of (samples, classes)
             labels: a list containing the actual class labels
             verbose: (bool) are the scores printed out. (default = False)
 
