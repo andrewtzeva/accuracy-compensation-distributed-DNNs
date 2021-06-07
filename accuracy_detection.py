@@ -18,7 +18,7 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
             df (pandas.DataFrame): dataframe with the results.
         """
 
-    df = pd.DataFrame(columns=["Top1", "Top5", "Entropy", "BVSB", "Exp.accuracy",
+    df = pd.DataFrame(columns=["Top1", "Top5", "Entropy", "BVSB", "Max Conf.", "Exp.accuracy",
                                                "Gini", "B.accuracy", "C.Entropy"])
 
     top1_acc = top1_accuracy(predictions, labels)
@@ -26,11 +26,12 @@ def evaluate_accuracy_algo(model_name, predictions, labels, verbose=False):
     exp_acc = expected_accuracy(predictions, labels)
     exp_entr = expected_entropy(predictions)
     bvsb_val = expected_bvsb(predictions)
+    max_conf = expected_max_confidence(predictions)
     gini = expected_gini_index(predictions)
     cross_entr = expected_cross_entropy(predictions, labels)
     b_acc = balanced_accuracy(predictions, labels)
 
-    df.loc[0] = [top1_acc, top5_acc, exp_entr, bvsb_val, exp_acc, gini, b_acc, cross_entr]
+    df.loc[0] = [top1_acc, top5_acc, exp_entr, bvsb_val, max_conf, exp_acc, gini, b_acc, cross_entr]
 
     if verbose:
         print('{}:'.format(model_name))

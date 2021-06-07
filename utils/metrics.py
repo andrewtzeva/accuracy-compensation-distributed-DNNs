@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.metrics import balanced_accuracy_score, f1_score
+from sklearn.metrics import balanced_accuracy_score, f1_score, confusion_matrix
 from .utils import reform_samples
 
 
@@ -30,6 +30,46 @@ def topk_accuracy(predictions, labels, k):
             acc_sum += 1
 
     return acc_sum/num_of_samples
+
+
+def topk_closeness(pred, k):
+        sum = 0
+        sorted_args = pred.argsort()[-k:][::-1]
+        for j in range(k-1):
+            sum += pred[sorted_args[j]] - pred[sorted_args[j+1]]
+        return sum/k
+
+
+def max_confidence(pred):
+    return np.max(pred)
+
+
+def expected_max_confidence(predictions):
+    sum = 0
+    num_of_samples = len(predictions)
+
+    for pred in predictions:
+        sum += max_confidence(pred)
+
+    return sum/num_of_samples
+
+
+def topk_entropy(pred, k):
+    sum = 0
+    sorted_args = pred.argsort()[-k:][::-1]
+    for j in range(k):
+        sum += -pred[sorted_args[j]]*np.log(pred[sorted_args[j]])
+    return sum
+
+
+def expected_topk_closeness(predictions, k):
+    sum = 0
+    num_of_samples = len(predictions)
+
+    for i, pred in enumerate(predictions):
+        sum += topk_closeness(pred, k)
+
+    return sum/num_of_samples
 
 
 def expected_accuracy(predictions, labels):
@@ -150,6 +190,12 @@ def balanced_accuracy(predictions, labels):
     y_pred, y_true = reform_samples(predictions, labels)
 
     return balanced_accuracy_score(y_true, y_pred)
+
+
+def conf_matrix(predictions, labels):
+    y_pred, y_true = reform_samples(predictions, labels)
+
+    return confusion_matrix(y_true, y_pred)
 
 
 def f1_score(predictions, labels):
