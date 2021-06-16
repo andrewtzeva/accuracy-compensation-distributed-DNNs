@@ -2,6 +2,8 @@ import numpy as np
 from keras.preprocessing import image
 import keras
 import pickle
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def reform_samples(predictions, labels):
@@ -51,7 +53,18 @@ def unpickle_predictions(file, verbose=False):
 def load_model_files(model_name, scaler):
     path = 'models/' + model_name + '/'
     val_file = 'val_logits_' + model_name + '.pkl'
-    test_file = 'test_logits_' + model_name + '.pkl'
+    test_file = 'test_logits_' + model_name + '_3.pkl'
 
     return path, val_file, test_file
+
+
+def plot_conf_matrix(cf_matrix):
+    vmin = np.min(cf_matrix)
+    vmax = np.max(cf_matrix)
+    off_diag_mask = np.eye(*cf_matrix.shape, dtype=bool)
+
+    fig = plt.figure()
+    sns.heatmap(cf_matrix, annot=True, mask=~off_diag_mask, cmap='Blues', vmin=vmin, vmax=vmax)
+    sns.heatmap(cf_matrix, annot=True, mask=off_diag_mask, cmap='OrRd', vmin=vmin, vmax=vmax, cbar_kws=dict(ticks=[]))
+    plt.show()
 
