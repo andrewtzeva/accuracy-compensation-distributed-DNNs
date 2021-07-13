@@ -440,6 +440,7 @@ super_map = {
     435: 'structure',
     436: 'vehicle',
     437: 'structure',
+    438: 'instrument',
     439: 'clothing',
     440: 'kitchen',
     441: 'kitchen',
