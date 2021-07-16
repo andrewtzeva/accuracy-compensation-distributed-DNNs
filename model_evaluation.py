@@ -2,6 +2,7 @@ from calibration import *
 from accuracy_detection import *
 from accuracy_refinement import accuracy_refinement
 from utils.superclasses import super_map
+from keras_applications import nasnet
 
 
 def main():
@@ -26,7 +27,8 @@ def main():
 
 def test():
     mobile_model = 'mobilenet'
-
+    nasnet = keras.applications.nasnet.NASNetLarge(weights='imagenet')
+    nasnet.summary()
     scaler_mobile = TemperatureScaling()
 
     path_mobile, val_file_mobile, test_file_mobile = load_model_files(mobile_model, scaler_mobile)
@@ -37,8 +39,7 @@ def test():
     acc_sum = 0
     for i, pred_distribution in enumerate(predictions_mobile):
         if bvsb(pred_distribution) < 0.165 or max_confidence(pred_distribution) < 0.54:
-            top_super = accuracy_refinement(pred_distribution)
-            pred_superclass = list(top_super.keys())[0]
+            pred_superclass = accuracy_refinement(pred_distribution)
 
             true_index = np.argmax(labels[i])
             true_superclass = super_map[true_index]
